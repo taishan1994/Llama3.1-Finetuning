@@ -75,8 +75,8 @@ def get_model_result(base_model_path, fintune_model_path):
 
 
 if __name__ == '__main__':
-    base_path = "./model_hub/qwen/Qwen1___5-1___8B/"
-    lora_in_path = "./output/qwen1.5_1.8B_qlora_4bit/checkpoint-160"
-    lora_out_path = "./output/qwen1.5_1.8B_qlora_4bit_merged"
+    base_path = "../model_hub/qwen/Qwen1___5-1___8B/"
+    lora_in_path = "../output/qwen1.5_1.8B_qlora_4bit/checkpoint-160"
+    lora_out_path = "../output/qwen1.5_1.8B_qlora_4bit_merged"
     # get_lora_model(base_path, lora_in_path, lora_out_path)
     get_model_result(base_path, lora_out_path)

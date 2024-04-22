@@ -13,8 +13,8 @@ adapter_name = "self"
 # base_model_path = "./model_hub/qwen/Qwen1___5-72B-Chat"
 # peft_model_id = "./output/qwen1.5_72B_lora/checkpoint-80/"
 
-base_model_path = "./model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
-peft_model_id = "./output/llama3_8B_lora/"
+base_model_path = "../model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
+peft_model_id = "../output/llama3_8B_lora/"
 
 device = "cuda"
 quantization_config = None

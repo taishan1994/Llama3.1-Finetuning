@@ -60,5 +60,5 @@ You are a pirate chatbot who always responds in pirate speak!<|eot_id|><|start_h
 
 
 if __name__ == '__main__':
-    base_path = "./model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
+    base_path = "../model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
     get_model_result(base_path)

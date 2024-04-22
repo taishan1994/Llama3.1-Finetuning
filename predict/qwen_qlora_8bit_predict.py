@@ -1,19 +1,44 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+import torch
+
+
+def get_lora_model(base_model_path,
+                   lora_model_input_path,
+                   lora_model_output_path):
+    #######################
+    # 如果是lora和qlora训练的，需要先合并模型
+    model = AutoModelForCausalLM.from_pretrained(base_model_path, torch_dtype=torch.float16, device_map="auto",trust_remote_code=True)
+    model = PeftModel.from_pretrained(model, lora_model_input_path)
+    merged_model = model.merge_and_unload()
+    merged_model.save_pretrained(lora_model_output_path, max_shard_size="2048MB", safe_serialization=True)
+    #######################
+    print("合并权重完成。")
+
+    #######################
+    # 如果是lora和qlora训练的，合并完模型后拷贝tokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        base_model_path,
+        trust_remote_code=True
+    )
+
+    tokenizer.save_pretrained(lora_model_output_path)
+    #######################
+    print("保存tokenizer完成.")
 
 
 def get_model_result(base_model_path, fintune_model_path):
     tokenizer = AutoTokenizer.from_pretrained(base_model_path)
-    device = "cuda"
+    device = "cuda:0"
 
     fintune_model = AutoModelForCausalLM.from_pretrained(
         fintune_model_path,
-        device_map="auto",
-    ).eval()
+    ).to(device).eval()
 
     base_model = AutoModelForCausalLM.from_pretrained(
         base_model_path,
-        device_map="auto",
-    ).eval()
+    ).to(device).eval()
 
     prompt = "你是谁"
 
@@ -50,6 +75,8 @@ def get_model_result(base_model_path, fintune_model_path):
 
 
 if __name__ == '__main__':
-    base_path = "./model_hub/qwen/Qwen1___5-1___8B/"
-    fintune_path = "./output/qwen1.5_1.8B_full/checkpoint-20/"
-    get_model_result(base_path, fintune_path)
+    base_path = "../model_hub/qwen/Qwen1___5-1___8B/"
+    lora_in_path = "../output/qwen1.5_1.8B_lora/checkpoint-160"
+    lora_out_path = "../output/qwen1.5_1.8B_lora_merged"
+    # get_lora_model(base_path, lora_in_path, lora_out_path)
+    get_model_result(base_path, lora_out_path)

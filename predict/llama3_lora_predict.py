@@ -1,3 +1,5 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = "4,5,6,7"
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
@@ -30,20 +32,27 @@ def get_lora_model(base_model_path,
 
 def get_model_result(base_model_path, fintune_model_path):
     tokenizer = AutoTokenizer.from_pretrained(base_model_path)
-    device = "cuda:0"
+    device = "cuda"
 
     fintune_model = AutoModelForCausalLM.from_pretrained(
         fintune_model_path,
-    ).to(device).eval()
+        device_map="auto",
+        torch_dtype=torch.bfloat16,
+    ).eval()
 
     base_model = AutoModelForCausalLM.from_pretrained(
         base_model_path,
-    ).to(device).eval()
+        device_map="auto",
+        torch_dtype=torch.bfloat16,
+    ).eval()
 
-    prompt = "你是谁"
+    prompt = "请问你是何方神圣？"
+    prompt = "你叫什么名字呢？"
+    prompt = "你是谁？"
+    prompt = "在互联网普及的时代，社交媒体已经成为了现代人生活中不可缺少的一部分。从微信、微博、Facebook到Twitter、Instagram等等，社交媒体不仅满足了人们交流互动的需求，同时让人们更加容易地分享自己的生活瞬间、获取新闻资讯、找到志同道合的人群以及推广自己的业务。然而，与此同时，社交媒体也带来了一系列问题，如滥用个人信息、泄露隐私等。因此，如何正确地使用社交媒体已经成为了一个备受关注的话题。，总结上面这段文本的几个关键词"
 
     messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
         {"role": "user", "content": prompt}
     ]
     text = tokenizer.apply_chat_template(
@@ -58,7 +67,7 @@ def get_model_result(base_model_path, fintune_model_path):
         generated_ids = model.generate(
             model_inputs.input_ids,
             max_new_tokens=512,
-            eos_token_id=tokenizer.get_vocab()["<|im_end|>"]
+            eos_token_id=tokenizer.get_vocab()["<|eot_id|>"]
         )
         generated_ids = [
             output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
@@ -75,8 +84,8 @@ def get_model_result(base_model_path, fintune_model_path):
 
 
 if __name__ == '__main__':
-    base_path = "./model_hub/qwen/Qwen1___5-1___8B/"
-    lora_in_path = "./output/qwen1.5_1.8B_lora/checkpoint-160"
-    lora_out_path = "./output/qwen1.5_1.8B_lora_merged"
-    # get_lora_model(base_path, lora_in_path, lora_out_path)
+    base_path = "../model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
+    lora_in_path = "../output/llama3_8B_lora/"
+    lora_out_path = "../output/llama3_8B_lora_merged"
+    get_lora_model(base_path, lora_in_path, lora_out_path)
     get_model_result(base_path, lora_out_path)

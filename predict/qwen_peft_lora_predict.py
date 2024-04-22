@@ -1,4 +1,5 @@
 import os
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 from peft import PeftModel, PeftConfig, LoraModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
@@ -8,17 +9,13 @@ import random
 
 adapter_name = "self"
 
-base_model_path = "./model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
-peft_model_id = "./output/llama3_8B_qlora/"
+
+base_model_path = "../model_hub/qwen/Qwen1___5-1___8B/"
+peft_model_id = "../output/qwen1.5_1.8B_lora/checkpoint-160"
 
 
 device = "cuda"
-quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=False,
-        )
+quantization_config = None
 model = AutoModelForCausalLM.from_pretrained(base_model_path,
                                              device_map="auto",
                                              quantization_config=quantization_config)
@@ -30,7 +27,7 @@ model.eval()
 prompt = "你是谁"
 
 messages = [
-    {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
+    {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content": prompt}
 ]
 text = tokenizer.apply_chat_template(
@@ -46,7 +43,7 @@ def get_result(model_inputs, model):
     generated_ids = model.generate(
         **model_inputs,
         max_new_tokens=512,
-        eos_token_id=tokenizer.get_vocab()["<|eot_id|>"]
+        eos_token_id=tokenizer.get_vocab()["<|im_end|>"]
     )
     generated_ids = [
         output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
