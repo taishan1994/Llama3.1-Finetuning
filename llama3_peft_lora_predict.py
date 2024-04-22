@@ -29,7 +29,7 @@ model.eval()
 prompt = "你是谁"
 
 messages = [
-    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
     {"role": "user", "content": prompt}
 ]
 text = tokenizer.apply_chat_template(

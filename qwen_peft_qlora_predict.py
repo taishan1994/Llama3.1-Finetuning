@@ -8,8 +8,8 @@ import random
 
 adapter_name = "self"
 
-base_model_path = "./model_hub/LLM-Research/Meta-Llama-3-8B-Instruct/"
-peft_model_id = "./output/llama3_8B_qlora/"
+base_model_path = "./model_hub/qwen/Qwen1___5-72B-Chat"
+peft_model_id = "./output/qwen1.5_72B_lora/checkpoint-80/"
 
 
 device = "cuda"
@@ -30,7 +30,7 @@ model.eval()
 prompt = "你是谁"
 
 messages = [
-    {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
+    {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content": prompt}
 ]
 text = tokenizer.apply_chat_template(
@@ -46,7 +46,7 @@ def get_result(model_inputs, model):
     generated_ids = model.generate(
         **model_inputs,
         max_new_tokens=512,
-        eos_token_id=tokenizer.get_vocab()["<|eot_id|>"]
+        eos_token_id=tokenizer.get_vocab()["<|im_end|>"]
     )
     generated_ids = [
         output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
