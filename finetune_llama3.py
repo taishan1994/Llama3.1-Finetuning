@@ -165,7 +165,7 @@ def preprocess(
                 _input_id = [start_header_id] + _assistant + [end_header_id] + nl_tokens + tokenizer(value).input_ids + [
                     eot_id]
                 _target = [IGNORE_TOKEN_ID] + [IGNORE_TOKEN_ID] * len(_assistant) + \
-                          [IGNORE_TOKEN_ID] + [IGNORE_TOKEN_ID] + tokenizer(value).input_ids + [eot_id]
+                          [IGNORE_TOKEN_ID] + [IGNORE_TOKEN_ID] * len(nl_tokens) + tokenizer(value).input_ids + [eot_id]
             else:
                 raise NotImplementedError
             input_id += _input_id
