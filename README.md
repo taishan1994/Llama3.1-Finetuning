@@ -1,6 +1,9 @@
 # Llama3-Finetuning
 对llama3进行全参微调、lora微调以及qlora微调。除此之外，也支持对qwen1.5的模型进行微调。如果要替换为其它的模型，最主要的还是在数据的预处理那一块。
 
+# 更新日志
+- 2024/07/19：添加对internlm2.5的微调。
+
 # 安装依赖
 ```shell
 pip install -r requirements.txt

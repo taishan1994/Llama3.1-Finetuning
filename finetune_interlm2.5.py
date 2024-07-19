@@ -48,6 +48,8 @@ class TrainingArguments(transformers.TrainingArguments):
         },
     )
     use_lora: bool = False
+    bf16 = False
+    fp16 = False
 
 
 @dataclass
@@ -56,8 +58,11 @@ class LoraArguments:
     lora_alpha: int = 16
     lora_dropout: float = 0.05
     # ['gate_proj', 'o_proj', 'k_proj', 'q_proj', 'up_proj', 'down_proj', 'v_proj']
+    # lora_target_modules: List[str] = field(
+    #     default_factory=lambda: ['o_proj', 'k_proj', 'q_proj', 'v_proj']
+    # )
     lora_target_modules: List[str] = field(
-        default_factory=lambda: ['o_proj', 'k_proj', 'q_proj', 'v_proj']
+        default_factory=lambda: ['wqkv', 'wo']
     )
     lora_weight_path: str = ""
     lora_bias: str = "none"
@@ -132,36 +137,43 @@ def preprocess(
         max_len: int,
         system_message: str = "You are a helpful assistant."
 ) -> Dict:
-    # im_start = tokenizer.im_start_id
-    # im_end = tokenizer.im_end_id
+    # roles = {"user": "<|im_start|>user", "assistant": "<|im_start|>assistant"}
+
     im_start = tokenizer.get_vocab()["<|im_start|>"]
     im_end = tokenizer.get_vocab()["<|im_end|>"]
-    nl_tokens = tokenizer('\n').input_ids
-    _system = tokenizer('system').input_ids + nl_tokens
-    _user = tokenizer('user').input_ids + nl_tokens
-    _assistant = tokenizer('assistant').input_ids + nl_tokens
+    nl_tokens = tokenizer('\n', add_special_tokens=False).input_ids
+    _system = tokenizer('system\n', add_special_tokens=False).input_ids
+    _user = tokenizer('user\n', add_special_tokens=False).input_ids
+    _assistant = tokenizer('assistant\n', add_special_tokens=False).input_ids
 
     # Apply prompt templates
     input_ids, targets = [], []
     for i, source in enumerate(sources):
         input_id, target = [], []
-        system = [im_start] + _system + tokenizer(system_message).input_ids + [im_end] + nl_tokens
+        system_message_ids = tokenizer(system_message, add_special_tokens=False).input_ids
+        system = [im_start] + _system + system_message_ids + [im_end] + nl_tokens
+        # print(tokenizer.decode(system))
         input_id += system
         target += [IGNORE_TOKEN_ID] * len(system)
+
         assert len(input_id) == len(target)
         for j, sentence in enumerate(source):
             role = sentence["from"]
-            t_value = tokenizer(sentence["value"]).input_ids
             if role == 'user':
+                t_value = tokenizer(sentence["value"], add_special_tokens=False).input_ids
                 _input_id = [im_start] + _user + t_value + [im_end] + nl_tokens + [im_start] + _assistant
+                # print(tokenizer.decode(_input_id))
                 _target = [IGNORE_TOKEN_ID] * len(_input_id)
             elif role == 'assistant':
+                t_value = tokenizer(sentence["value"], add_special_tokens=False).input_ids
                 _input_id = t_value + [im_end] + nl_tokens
+                # print(tokenizer.decode(_input_id))
                 _target = t_value + [im_end] + nl_tokens
             else:
                 raise NotImplementedError
             input_id += _input_id
             target += _target
+        # print(len(input_id), len(target))
         assert len(input_id) == len(target)
         input_id += [tokenizer.pad_token_id] * (max_len - len(input_id))
         target += [IGNORE_TOKEN_ID] * (max_len - len(target))
@@ -288,6 +300,11 @@ def train():
         training_args,
         lora_args,
     ) = parser.parse_args_into_dataclasses()
+
+
+    # 打印所有配置
+    print(training_args)
+
 
     # This serves for single-gpu qlora.
     if getattr(training_args, 'deepspeed', None) and int(os.environ.get("WORLD_SIZE", 1)) == 1:
