@@ -3,7 +3,10 @@
 
 # 更新日志
 
-- 2024/07/22：添加对glm-9B-chat的微调。注意：需要将modeling_chatglm.py里面的791行替换为`padding_mask = padding_mask.to(torch.bfloat16)`。需要的transformers的版本为`4.42.4`，安装完requirements.txt里面的包后需要再重新安装transformers。
+- 2024/07/22：
+  - 添加对glm-9B-chat的微调。注意：需要将modeling_chatglm.py里面的791行替换为`padding_mask = padding_mask.to(torch.bfloat16)`。需要的transformers的版本为`4.42.4`，安装完requirements.txt里面的包后需要再重新安装transformers。
+
+  - 添加对qwen1.5-7B-Chat的微调。
 
 - 2024/07/19：添加对internlm2.5的微调。注意：internlm2.5不支持使用bf16微调，因此在运行指令中选择的是fp16。
 
