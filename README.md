@@ -2,7 +2,10 @@
 对llama3进行全参微调、lora微调以及qlora微调。除此之外，也支持对qwen1.5的模型进行微调。如果要替换为其它的模型，最主要的还是在数据的预处理那一块。
 
 # 更新日志
-- 2024/07/19：添加对internlm2.5的微调。
+
+- 2024/07/22：添加对glm-9B-chat的微调。注意：需要将modeling_chatglm.py里面的791行替换为`padding_mask = padding_mask.to(torch.bfloat16)`。需要的transformers的版本为`4.42.4`，安装完requirements.txt里面的包后需要再重新安装transformers。
+
+- 2024/07/19：添加对internlm2.5的微调。注意：internlm2.5不支持使用bf16微调，因此在运行指令中选择的是fp16。
 
 # 安装依赖
 ```shell
