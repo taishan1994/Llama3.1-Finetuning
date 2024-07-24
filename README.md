@@ -1,7 +1,9 @@
-# Llama3-Finetuning
+# Llama3/3.1-Finetuning
 对llama3进行全参微调、lora微调以及qlora微调。除此之外，也支持对qwen1.5的模型进行微调。如果要替换为其它的模型，最主要的还是在数据的预处理那一块。
 
 # 更新日志
+
+- 2024/07/24：添加对llama3.1-8B-Instruct的微调。
 
 - 2024/07/22：
   - 添加对glm-9B-chat的微调。注意：需要将modeling_chatglm.py里面的791行替换为`padding_mask = padding_mask.to(torch.bfloat16)`。需要的transformers的版本为`4.42.4`，安装完requirements.txt里面的包后需要再重新安装transformers。
