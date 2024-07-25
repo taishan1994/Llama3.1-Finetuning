@@ -3,7 +3,7 @@
 
 # 更新日志
 
-- 2024/07/24：添加对llama3.1-8B-Instruct的微调。
+- 2024/07/24：添加对llama3.1-8B-Instruct的微调。`transformers==4.43.1`和`accelerate==0.33.0`。
 
 - 2024/07/22：
   - 添加对glm-9B-chat的微调。注意：需要将modeling_chatglm.py里面的791行替换为`padding_mask = padding_mask.to(torch.bfloat16)`。需要的transformers的版本为`4.42.4`，安装完requirements.txt里面的包后需要再重新安装transformers。
@@ -17,9 +17,11 @@
 - 2024/07/19：添加对internlm2.5的微调。注意：internlm2.5不支持使用bf16微调，因此在运行指令中选择的是fp16。
 
 # 安装依赖
-```shell
-pip install -r requirements.txt
-```
+
+- 运行设备：24G显存的显卡即可。
+- `python==3.8.8`
+
+- `pip install -r requirements.txt`
 
 # 数据准备
 data下面存放数据，具体格式为：
