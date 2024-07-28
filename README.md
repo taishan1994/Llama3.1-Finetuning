@@ -3,6 +3,7 @@
 
 # 更新日志
 
+- 2023/07/28：添加对Baichuan2-7B-Chat的微调。
 - 2024/07/24：添加对llama3.1-8B-Instruct的微调。`transformers==4.43.1`和`accelerate==0.33.0`。
 
 - 2024/07/22：
