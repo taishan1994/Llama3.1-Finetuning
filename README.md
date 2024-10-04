@@ -17,6 +17,8 @@
 
 - 2024/07/19：添加对internlm2.5的微调。注意：internlm2.5不支持使用bf16微调，因此在运行指令中选择的是fp16。
 
+- 2024/10/04：添加对Qwen2.5-7B-Instruct的微调。添加对llama3.2-3B-Instruct的微调。`pip install transformers --upgrade`和`pip install accelerate --upgrade`。
+
 # 安装依赖
 
 - 运行设备：24G显存的显卡即可。
